@@ -27,9 +27,6 @@ architecture behavioral of generic_register is
 begin
     state_advance: process(clk)
     begin
-		if sending = '0' then
-			input <= system_bus;
-		end if;
         if falling_edge(clk) then
             curr_state <= next_state;
         end if;
@@ -63,6 +60,7 @@ begin
         end case;
     end process;
 
+    input <= system_bus when sending = '0' else (others => 'Z');
     system_bus(register_width - 1 downto 0) <= value when sending = '1' else (others => 'Z');
 	aux_read <= value;
 
