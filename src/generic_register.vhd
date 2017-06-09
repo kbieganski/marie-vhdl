@@ -18,7 +18,7 @@ architecture behavioral of generic_register is
     signal value: std_logic_vector(register_width - 1 downto 0);
     signal input: std_logic_vector(bus_width - 1 downto 0);
 
-    type state_t is (idle, load, send, sleep);
+    type state_t is (idle, load, send, sleep_2, sleep_1);
     signal curr_state: state_t;
     signal next_state: state_t := idle;
 
@@ -46,16 +46,19 @@ begin
 					elsif input(7 downto 4) = identifier then
 						next_state <= load;
 					else
-						next_state <= sleep;
+						next_state <= sleep_2;
 					end if;
 				end if;
             when load =>
 				value <= input(register_width - 1 downto 0);
-				next_state <= idle;
+				next_state <= sleep_1;
             when send =>
 				sending <= '1';
-				next_state <= idle;
-			when sleep =>
+				next_state <= sleep_1;
+			when sleep_2 =>
+                next_state <= sleep_1;
+			when sleep_1 =>
+				sending <= '0';
                 next_state <= idle;
         end case;
     end process;

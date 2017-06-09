@@ -22,7 +22,7 @@ architecture behavioral of random_access_memory is
     signal input:  std_logic_vector(word_width - 1 downto 0);
     signal output: std_logic_vector(word_width - 1 downto 0);
 
-    type state_t is (idle, store_call, store_send, load_call, load_send, sleep);
+    type state_t is (idle, store_call, store_send, load_call, load_send, sleep_2, sleep_1);
     signal curr_state: state_t;
     signal next_state: state_t := idle;
 
@@ -48,7 +48,7 @@ begin
 						next_state <= load_call;
 					end if;
 				elsif input(word_width - 1) = '1' then
-					next_state <= sleep;
+					next_state <= sleep_2;
 				end if;
             when store_call =>
 				sending <= '1';
@@ -60,7 +60,7 @@ begin
             when store_send =>
 				sending <= '0';
 				values(to_integer(unsigned(memory_address))) <= input;
-                next_state <= idle;
+                next_state <= sleep_1;
 			when load_call =>
 				sending <= '1';
 				output(3 downto 0) <= identifier;
@@ -70,8 +70,11 @@ begin
 				next_state <= load_send;
             when load_send =>
                 output <= values(to_integer(unsigned(memory_address)));
-                next_state <= idle;
-            when sleep =>
+                next_state <= sleep_1;
+            when sleep_2 =>
+                next_state <= sleep_1;
+            when sleep_1 =>
+				sending <= '0';
                 next_state <= idle;
         end case;
     end process;

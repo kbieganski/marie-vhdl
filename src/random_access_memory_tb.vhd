@@ -88,26 +88,25 @@ begin
     begin
         for i in 0 to 2 ** address_width - 1 loop
             aux_write_mar <= std_logic_vector(to_unsigned(i, address_width));
-            aux_write_mbr(word_width - 1 downto 0) <= std_logic_vector(to_unsigned(i, word_width));
+            aux_write_mbr <= std_logic_vector(to_unsigned(2**address_width - 1 - i, word_width));
             system_bus(word_width - 1 downto 0) <= (others => '0');
             wait for clk_period;
             aux_write_mar <= (others => 'Z');
             aux_write_mbr <= (others => 'Z');
             system_bus(word_width - 1 downto 0) <= (others => 'Z');
-            wait for 2 * clk_period;
+            wait for 3 * clk_period;
         end loop;
         wait for clk_period;
         for i in 0 to 2 ** address_width - 1 loop
             aux_write_mar <= std_logic_vector(to_unsigned(i, address_width));
             system_bus(word_width - 1) <= '0';
             system_bus(word_width - 2) <= '1';
-            system_bus(word_width - 3 downto 4) <= (others => '0');
-            system_bus(3 downto 0) <= x"0";
+            system_bus(word_width - 3 downto 0) <= (others => '0');
             wait for clk_period;
             aux_write_mar <= (others => 'Z');
-            system_bus(word_width - 1 downto 0) <= (others => 'Z');
-            wait for 1.5 * clk_period;
-            assert aux_read_mbr = std_logic_vector(to_unsigned(i, word_width)) report "Incorrect value at address " & integer'image(i);
+            system_bus <= (others => 'Z');
+            wait for 2.5 * clk_period;
+            assert aux_read_mbr = std_logic_vector(to_unsigned(2**address_width - 1 - i, word_width)) report "Incorrect value at address " & integer'image(i);
             wait for 0.5 * clk_period;
         end loop;
         wait;

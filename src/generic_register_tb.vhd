@@ -75,7 +75,7 @@ begin
         wait for clk_period;
         system_bus <= (others => 'Z');
 
-        wait for clk_period;
+        wait for 2 * clk_period;
         assert aux_read_b = test_value1 report "Incorrect value in receiving register (B)";
 
         wait for clk_period;
@@ -91,7 +91,7 @@ begin
         wait for clk_period;
         system_bus <= (others => 'Z');
 
-        wait for clk_period;
+        wait for 2 * clk_period;
         assert aux_read_a = test_value2 report "Incorrect value in receiving register (A)";
 
         wait;
