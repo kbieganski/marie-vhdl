@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.global_constants.all;
+use work.utility.all;
 
 entity generic_register_tb is
 end generic_register_tb;
@@ -58,38 +59,32 @@ begin
 	end process;
 
 	stimulus: process
-		constant test_value1: std_logic_vector(bus_width - 1 downto 0) := x"CDEF";
-		constant test_value2: std_logic_vector(bus_width - 1 downto 0) := x"FEDC";
+		constant test_value_1: std_logic_vector(bus_width - 1 downto 0) := x"CDEF";
+		constant test_value_2: std_logic_vector(bus_width - 1 downto 0) := x"FEDC";
 	begin
-		aux_write_a <= test_value1;
+		aux_write_a <= test_value_1;
 		wait for clk_period;
 		aux_write_a <= (others => 'Z');
 
-		system_bus(bus_width - 1) <= '1';
-		system_bus(3 downto 0) <= x"A";
-		system_bus(7 downto 4) <= x"B";
-		system_bus(bus_width - 2 downto 8) <= (others => '0');
+		system_bus <= encode_send_cmd(x"A", x"B");
 		wait for clk_period;
 		system_bus <= (others => 'Z');
 
 		wait for 2 * clk_period;
-		assert aux_read_b = test_value1 report "Incorrect value in receiving register (B)";
+		assert aux_read_b = test_value_1 report "Incorrect value in receiving register (B)";
 
 		wait for clk_period;
 
-		aux_write_b <= test_value2;
+		aux_write_b <= test_value_2;
 		wait for clk_period;
 		aux_write_b <= (others => 'Z');
 
-		system_bus(bus_width - 1) <= '1';
-		system_bus(3 downto 0) <= x"B";
-		system_bus(7 downto 4) <= x"A";
-		system_bus(bus_width - 2 downto 8) <= (others => '0');
+		system_bus <= encode_send_cmd(x"B", x"A");
 		wait for clk_period;
 		system_bus <= (others => 'Z');
 
 		wait for 2 * clk_period;
-		assert aux_read_a = test_value2 report "Incorrect value in receiving register (A)";
+		assert aux_read_a = test_value_2 report "Incorrect value in receiving register (A)";
 
 		wait;
 	end process;

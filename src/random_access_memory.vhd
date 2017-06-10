@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.global_constants.all;
+use work.utility.all;
 
 entity random_access_memory is
 	generic
@@ -40,21 +41,18 @@ begin
 		case curr_state is
 			when idle =>
 				sending <= '0';
-				if input(3 downto 0) = identifier then
-					if input(word_width - 2) = '0' then
+				if is_cmd_for(input, identifier) then
+					if decode_ram_cmd(input) = '0' then
 						next_state <= store_call;
-					elsif input(word_width - 2) = '1' then
+					else
 						next_state <= load_call;
 					end if;
-				elsif input(word_width - 1) = '1' then
+				elsif is_send_cmd(input) then
 					next_state <= sleep_2;
 				end if;
 			when store_call =>
 				sending <= '1';
-				output(3 downto 0) <= memory_buffer_id;
-				output(7 downto 4) <= identifier;
-				output(word_width - 2 downto 8) <= (others => '0');
-				output(word_width - 1) <= '1';
+				output <= encode_send_cmd(memory_buffer_id, identifier);
 				next_state <= store_send;
 			when store_send =>
 				sending <= '0';
@@ -62,10 +60,7 @@ begin
 				next_state <= sleep_1;
 			when load_call =>
 				sending <= '1';
-				output(3 downto 0) <= identifier;
-				output(7 downto 4) <= memory_buffer_id;
-				output(word_width - 2 downto 8) <= (others => '0');
-				output(word_width - 1) <= '1';
+				output <= encode_send_cmd(identifier, memory_buffer_id);
 				next_state <= load_send;
 			when load_send =>
 				output <= values(to_integer(unsigned(memory_address)));

@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.global_constants.all;
+use work.utility.all;
 
 entity random_access_memory_tb is
 end random_access_memory_tb;
@@ -77,28 +78,29 @@ begin
 	end process;
 
 	stimulus: process
+		constant max_address: natural := 2 ** address_width - 1;
 	begin
-		for i in 0 to 2 ** address_width - 1 loop
+		for i in 0 to max_address loop
 			aux_write_mar <= std_logic_vector(to_unsigned(i, address_width));
-			aux_write_mbr <= std_logic_vector(to_unsigned(2**address_width - 1 - i, word_width));
-			system_bus(word_width - 1 downto 0) <= (others => '0');
+			aux_write_mbr <= std_logic_vector(to_unsigned(max_address - i, word_width));
+			system_bus <= encode_ram_cmd(x"0", '0');
 			wait for clk_period;
 			aux_write_mar <= (others => 'Z');
 			aux_write_mbr <= (others => 'Z');
-			system_bus(word_width - 1 downto 0) <= (others => 'Z');
+			system_bus <= (others => 'Z');
 			wait for 3 * clk_period;
 		end loop;
+
 		wait for clk_period;
+
 		for i in 0 to 2 ** address_width - 1 loop
 			aux_write_mar <= std_logic_vector(to_unsigned(i, address_width));
-			system_bus(word_width - 1) <= '0';
-			system_bus(word_width - 2) <= '1';
-			system_bus(word_width - 3 downto 0) <= (others => '0');
+			system_bus <= encode_ram_cmd(x"0", '1');
 			wait for clk_period;
 			aux_write_mar <= (others => 'Z');
 			system_bus <= (others => 'Z');
 			wait for 2.5 * clk_period;
-			assert aux_read_mbr = std_logic_vector(to_unsigned(2**address_width - 1 - i, word_width)) report "Incorrect value at address " & integer'image(i);
+			assert aux_read_mbr = std_logic_vector(to_unsigned(max_address - i, word_width)) report "Incorrect value at address " & integer'image(i);
 			wait for 0.5 * clk_period;
 		end loop;
 		wait;

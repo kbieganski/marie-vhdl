@@ -4,7 +4,7 @@ TESTS=$(subst src/,,$(subst .vhd,,$(wildcard src/*_tb.vhd)))
 
 tests: $(TESTS)
 
-%_tb: obj/global_constants.o $(OBJECTS)
+%_tb: obj/global_constants.o obj/utility.o $(OBJECTS)
 	cd obj && ghdl -e --std=08 $@
 	@mv obj/$@ .
 	@echo "TEST START - $@"; echo "ghdl -r $@"

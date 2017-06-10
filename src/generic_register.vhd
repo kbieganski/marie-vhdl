@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.global_constants.all;
+use work.utility.all;
 
 entity generic_register is
 	generic
@@ -40,10 +41,10 @@ begin
 		case curr_state is
 			when idle =>
 				sending <= '0';
-				if input(bus_width - 1) = '1' then
-					if input(3 downto 0) = identifier then
+				if is_send_cmd(input) then
+					if decode_send_src(input) = identifier then
 						next_state <= send;
-					elsif input(7 downto 4) = identifier then
+					elsif decode_send_dest(input) = identifier then
 						next_state <= load;
 					else
 						next_state <= sleep_3;
@@ -66,6 +67,7 @@ begin
 	end process;
 
 	input <= system_bus when sending = '0' else (others => 'Z');
+	system_bus(bus_width - 1 downto register_width) <= (others => '0') when sending = '1' else (others => 'Z');
 	system_bus(register_width - 1 downto 0) <= value when sending = '1' else (others => 'Z');
 	aux_read <= value;
 

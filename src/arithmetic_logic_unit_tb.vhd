@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.global_constants.all;
+use work.utility.all;
 
 entity arithmetic_logic_unit_tb is
 end arithmetic_logic_unit_tb;
@@ -79,39 +80,35 @@ begin
 	end process;
 
 	stimulus: process
-		constant test_value1:	  std_logic_vector(word_width - 1 downto 0) := x"0065";
-		constant test_value2:	  std_logic_vector(word_width - 1 downto 0) := x"009B";
+		constant test_value_1:	  std_logic_vector(word_width - 1 downto 0) := x"0065";
+		constant test_value_2:	  std_logic_vector(word_width - 1 downto 0) := x"009B";
 		constant test_value_neg:  std_logic_vector(word_width - 1 downto 0) := x"FFFF";
 		constant test_value_zero: std_logic_vector(word_width - 1 downto 0) := x"0000";
 		constant test_value_pos:  std_logic_vector(word_width - 1 downto 0) := x"0001";
 	begin
-		aux_write_acc <= test_value1;
-		aux_write_mbr <= test_value2;
+		aux_write_acc <= test_value_1;
+		aux_write_mbr <= test_value_2;
 		wait for clk_period;
 		aux_write_acc <= (others => 'Z');
 		aux_write_mbr <= (others => 'Z');
-		system_bus(word_width - 1) <= '0';
-		system_bus(word_width - 2 downto word_width - 4) <= "000";
-		system_bus(word_width - 5 downto 0) <= (others => '0');
+		system_bus <= encode_alu_cmd(x"0", "000");
 		wait for clk_period;
 		system_bus <= (others => 'Z');
 		wait for clk_period;
-		assert aux_read_acc = std_logic_vector(signed(test_value1) + signed(test_value2)) report "Incorrect result of addition";
+		assert aux_read_acc = std_logic_vector(signed(test_value_1) + signed(test_value_2)) report "Incorrect result of addition";
 
 		wait for clk_period;
 
-		aux_write_acc <= test_value1;
-		aux_write_mbr <= test_value2;
+		aux_write_acc <= test_value_1;
+		aux_write_mbr <= test_value_2;
 		wait for clk_period;
 		aux_write_acc <= (others => 'Z');
 		aux_write_mbr <= (others => 'Z');
-		system_bus(word_width - 1) <= '0';
-		system_bus(word_width - 2 downto word_width - 4) <= "001";
-		system_bus(word_width - 5 downto 0) <= (others => '0');
+		system_bus <= encode_alu_cmd(x"0", "001");
 		wait for clk_period;
 		system_bus <= (others => 'Z');
 		wait for clk_period;
-		assert aux_read_acc = std_logic_vector(signed(test_value1) - signed(test_value2)) report "Incorrect result of addition";
+		assert aux_read_acc = std_logic_vector(signed(test_value_1) - signed(test_value_2)) report "Incorrect result of subtraction";
 
 		wait for clk_period;
 
@@ -119,23 +116,19 @@ begin
 		wait for clk_period;
 		aux_write_acc <= (others => 'Z');
 
-		system_bus(word_width - 1) <= '0';
-		system_bus(word_width - 2 downto word_width - 4) <= "100";
-		system_bus(word_width - 5 downto 0) <= (others => '0');
+		system_bus <= encode_alu_cmd(x"0", "100");
 		wait for clk_period;
 		system_bus <= (others => 'Z');
 		wait for clk_period / 2;
-		assert system_bus(word_width - 2 downto 4) = (word_width - 2 downto 4 => '1') report "False negative result of checking if number is less than 0";
+		assert decode_alu_result(system_bus) report "False negative result of checking if number is less than 0";
 
 		wait for 1.5 * clk_period;
 
-		system_bus(word_width - 1) <= '0';
-		system_bus(word_width - 2 downto word_width - 4) <= "101";
-		system_bus(word_width - 5 downto 0) <= (others => '0');
+		system_bus <= encode_alu_cmd(x"0", "101");
 		wait for clk_period;
 		system_bus <= (others => 'Z');
 		wait for clk_period / 2;
-		assert system_bus(word_width - 2 downto 4) = (word_width - 2 downto 4 => '0') report "False positive result of checking if number is equal to 0";
+		assert not decode_alu_result(system_bus) report "False positive result of checking if number is equal to 0";
 
 		wait for 1.5 * clk_period;
 
@@ -143,23 +136,19 @@ begin
 		wait for clk_period;
 		aux_write_acc <= (others => 'Z');
 
-		system_bus(word_width - 1) <= '0';
-		system_bus(word_width - 2 downto word_width - 4) <= "101";
-		system_bus(word_width - 5 downto 0) <= (others => '0');
+		system_bus <= encode_alu_cmd(x"0", "101");
 		wait for clk_period;
 		system_bus <= (others => 'Z');
 		wait for clk_period / 2;
-		assert system_bus(word_width - 2 downto 4) = (word_width - 2 downto 4 => '1') report "False negative result of checking if number is equal to 0";
+		assert decode_alu_result(system_bus) report "False negative result of checking if number is equal to 0";
 
 		wait for 1.5 * clk_period;
 
-		system_bus(word_width - 1) <= '0';
-		system_bus(word_width - 2 downto word_width - 4) <= "110";
-		system_bus(word_width - 5 downto 0) <= (others => '0');
+		system_bus <= encode_alu_cmd(x"0", "110");
 		wait for clk_period;
 		system_bus <= (others => 'Z');
 		wait for clk_period / 2;
-		assert system_bus(word_width - 2 downto 4) = (word_width - 2 downto 4 => '0') report "False positive result of checking if number is greater than 0";
+		assert not decode_alu_result(system_bus) report "False positive result of checking if number is greater than 0";
 
 		wait for 1.5 * clk_period;
 
@@ -167,23 +156,19 @@ begin
 		wait for clk_period;
 		aux_write_acc <= (others => 'Z');
 
-		system_bus(word_width - 1) <= '0';
-		system_bus(word_width - 2 downto word_width - 4) <= "110";
-		system_bus(word_width - 5 downto 0) <= (others => '0');
+		system_bus <= encode_alu_cmd(x"0", "110");
 		wait for clk_period;
 		system_bus <= (others => 'Z');
 		wait for clk_period / 2;
-		assert system_bus(word_width - 2 downto 4) = (word_width - 2 downto 4 => '1') report "False negative result of checking if number is greater than 0";
+		assert decode_alu_result(system_bus) report "False negative result of checking if number is greater than 0";
 
 		wait for 1.5 * clk_period;
 
-		system_bus(word_width - 1) <= '0';
-		system_bus(word_width - 2 downto word_width - 4) <= "100";
-		system_bus(word_width - 5 downto 0) <= (others => '0');
+		system_bus <= encode_alu_cmd(x"0", "100");
 		wait for clk_period;
 		system_bus <= (others => 'Z');
 		wait for clk_period / 2;
-		assert system_bus(word_width - 2 downto 4) = (word_width - 2 downto 4 => '0') report "False positive result of checking if number is less than 0";
+		assert not decode_alu_result(system_bus) report "False positive result of checking if number is less than 0";
 
 		wait;
 	end process;
