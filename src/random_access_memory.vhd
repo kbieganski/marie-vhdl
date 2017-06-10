@@ -6,12 +6,12 @@ use work.utility.all;
 
 entity random_access_memory is
 	generic
-		(identifier:	   std_logic_vector(3 downto 0);
+		(identifier:       std_logic_vector(3 downto 0);
 		 memory_buffer_id: std_logic_vector(3 downto 0));
 	port
-		(system_bus:	 inout std_logic_vector(word_width - 1 downto 0);
-		 clk:			 in	   std_logic;
-		 memory_address: in	   std_logic_vector(address_width - 1 downto 0));
+		(system_bus:     inout std_logic_vector(word_width - 1 downto 0);
+		 clk:            in    std_logic;
+		 memory_address: in    std_logic_vector(address_width - 1 downto 0));
 end random_access_memory;
 
 architecture behavioral of random_access_memory is

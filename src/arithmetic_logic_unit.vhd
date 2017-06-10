@@ -8,11 +8,11 @@ entity arithmetic_logic_unit is
 	generic
 		(identifier: std_logic_vector(3 downto 0));
 	port
-		(system_bus:		inout std_logic_vector(word_width - 1 downto 0);
-		 clk:				in	  std_logic;
-		 accumulator_read:	in	  std_logic_vector(word_width - 1 downto 0);
-		 accumulator_write: out	  std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
-		 memory_buffer:		in	  std_logic_vector(word_width - 1 downto 0));
+		(system_bus:        inout std_logic_vector(word_width - 1 downto 0);
+		 clk:               in    std_logic;
+		 accumulator_read:  in    std_logic_vector(word_width - 1 downto 0);
+		 accumulator_write: out   std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
+		 memory_buffer:     in    std_logic_vector(word_width - 1 downto 0));
 end arithmetic_logic_unit;
 
 architecture behavioral of arithmetic_logic_unit is

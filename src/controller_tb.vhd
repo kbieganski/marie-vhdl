@@ -10,55 +10,55 @@ end controller_tb;
 architecture behavioral of controller_tb is
 	component controller is
 		generic
-			(identifier:		 std_logic_vector(3 downto 0);
+			(identifier:         std_logic_vector(3 downto 0);
 			 program_counter_id: std_logic_vector(3 downto 0);
 			 instruction_reg_id: std_logic_vector(3 downto 0);
-			 alu_id:			 std_logic_vector(3 downto 0);
-			 ram_id:			 std_logic_vector(3 downto 0);
-			 accumulator_id:	 std_logic_vector(3 downto 0);
-			 memory_address_id:	 std_logic_vector(3 downto 0);
-			 memory_buffer_id:	 std_logic_vector(3 downto 0));
+			 alu_id:             std_logic_vector(3 downto 0);
+			 ram_id:             std_logic_vector(3 downto 0);
+			 accumulator_id:     std_logic_vector(3 downto 0);
+			 memory_address_id:  std_logic_vector(3 downto 0);
+			 memory_buffer_id:   std_logic_vector(3 downto 0));
 		port
-			(system_bus:			inout std_logic_vector(word_width - 1 downto 0);
-			 clk:					in	  std_logic;
-			 program_counter_read:	in	  std_logic_vector(word_width - 5 downto 0);
-			 program_counter_write: out	  std_logic_vector(word_width - 5 downto 0);
-			 instruction:			in	  std_logic_vector(word_width - 1 downto 0));
+			(system_bus:            inout std_logic_vector(word_width - 1 downto 0);
+			 clk:                   in    std_logic;
+			 program_counter_read:  in    std_logic_vector(word_width - 5 downto 0);
+			 program_counter_write: out   std_logic_vector(word_width - 5 downto 0);
+			 instruction:           in    std_logic_vector(word_width - 1 downto 0));
 	end component;
 
 	component generic_register
 		generic
-			(identifier:	 std_logic_vector(3 downto 0);
+			(identifier:     std_logic_vector(3 downto 0);
 			 register_width: natural);
 		port
 			(system_bus: inout std_logic_vector(bus_width - 1 downto 0);
-			 clk:		 in	   std_logic;
-			 aux_write:	 in	   std_logic_vector(register_width - 1 downto 0);
-			 aux_read:	 out   std_logic_vector(register_width - 1 downto 0));
+			 clk:        in    std_logic;
+			 aux_write:  in    std_logic_vector(register_width - 1 downto 0);
+			 aux_read:   out   std_logic_vector(register_width - 1 downto 0));
 	end component;
 
 	constant clk_period: time := 10 ns;
-	constant ctrlr_id:	 std_logic_vector(3 downto 0) := x"0";
-	constant alu_id:	 std_logic_vector(3 downto 0) := x"1";
-	constant ram_id:	 std_logic_vector(3 downto 0) := x"2";
-	constant acc_id:	 std_logic_vector(3 downto 0) := x"3";
-	constant mar_id:	 std_logic_vector(3 downto 0) := x"4";
-	constant mbr_id:	 std_logic_vector(3 downto 0) := x"5";
-	constant pc_id:		 std_logic_vector(3 downto 0) := x"6";
-	constant ir_id:		 std_logic_vector(3 downto 0) := x"7";
+	constant ctrlr_id:   std_logic_vector(3 downto 0) := x"0";
+	constant alu_id:     std_logic_vector(3 downto 0) := x"1";
+	constant ram_id:     std_logic_vector(3 downto 0) := x"2";
+	constant acc_id:     std_logic_vector(3 downto 0) := x"3";
+	constant mar_id:     std_logic_vector(3 downto 0) := x"4";
+	constant mbr_id:     std_logic_vector(3 downto 0) := x"5";
+	constant pc_id:      std_logic_vector(3 downto 0) := x"6";
+	constant ir_id:      std_logic_vector(3 downto 0) := x"7";
 
 	signal clk: std_logic := '0';
 
-	signal system_bus:	  std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
+	signal system_bus:    std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
 	signal aux_read_acc:  std_logic_vector(word_width - 1 downto 0);
 	signal aux_write_acc: std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
 	signal aux_read_mar:  std_logic_vector(address_width - 1 downto 0);
 	signal aux_write_mar: std_logic_vector(address_width - 1 downto 0) := (others => 'Z');
 	signal aux_read_mbr:  std_logic_vector(word_width - 1 downto 0);
 	signal aux_write_mbr: std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
-	signal aux_read_pc:	  std_logic_vector(address_width - 1 downto 0);
+	signal aux_read_pc:   std_logic_vector(address_width - 1 downto 0);
 	signal aux_write_pc:  std_logic_vector(address_width - 1 downto 0) := (others => 'Z');
-	signal aux_read_ir:	  std_logic_vector(word_width - 1 downto 0);
+	signal aux_read_ir:   std_logic_vector(word_width - 1 downto 0);
 	signal aux_write_ir:  std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
 
 	procedure fetch_decode(signal system_bus: std_logic_vector(word_width - 1 downto 0); signal aux_write_mbr: out std_logic_vector(word_width - 1 downto 0); instruction: std_logic_vector(word_width - 1 downto 0)) is
@@ -79,14 +79,14 @@ architecture behavioral of controller_tb is
 begin
 	uut_ctrlr: controller
 		generic map
-		(identifier			=> ctrlr_id,
+		(identifier         => ctrlr_id,
 		 program_counter_id => pc_id,
 		 instruction_reg_id => ir_id,
-		 alu_id				=> alu_id,
-		 ram_id				=> ram_id,
-		 accumulator_id		=> acc_id,
-		 memory_address_id	=> mar_id,
-		 memory_buffer_id	=> mbr_id)
+		 alu_id             => alu_id,
+		 ram_id             => ram_id,
+		 accumulator_id     => acc_id,
+		 memory_address_id  => mar_id,
+		 memory_buffer_id   => mbr_id)
 		port map
 		(system_bus			   => system_bus,
 		 clk				   => clk,
@@ -96,60 +96,60 @@ begin
 
 	uut_acc: generic_register
 		generic map
-		(identifier		=> acc_id,
+		(identifier     => acc_id,
 		 register_width => word_width)
 		port map
 		(system_bus => system_bus,
-		 clk		=> clk,
-		 aux_write	=> aux_write_acc,
-		 aux_read	=> aux_read_acc);
+		 clk        => clk,
+		 aux_write  => aux_write_acc,
+		 aux_read   => aux_read_acc);
 
 	uut_mar: generic_register
 		generic map
-		(identifier		=> mar_id,
+		(identifier     => mar_id,
 		 register_width => address_width)
 		port map
 		(system_bus => system_bus,
-		 clk		=> clk,
-		 aux_write	=> aux_write_mar,
-		 aux_read	=> aux_read_mar);
+		 clk        => clk,
+		 aux_write  => aux_write_mar,
+		 aux_read   => aux_read_mar);
 
 	uut_mbr: generic_register
 		generic map
-		(identifier		=> mbr_id,
+		(identifier     => mbr_id,
 		 register_width => word_width)
 		port map
 		(system_bus => system_bus,
-		 clk		=> clk,
-		 aux_write	=> aux_write_mbr,
-		 aux_read	=> aux_read_mbr);
+		 clk        => clk,
+		 aux_write  => aux_write_mbr,
+		 aux_read   => aux_read_mbr);
 
 	uut_pc: generic_register
 		generic map
-		(identifier		=> pc_id,
+		(identifier     => pc_id,
 		 register_width => address_width)
 		port map
 		(system_bus => system_bus,
-		 clk		=> clk,
-		 aux_write	=> aux_write_pc,
-		 aux_read	=> aux_read_pc);
+		 clk        => clk,
+		 aux_write  => aux_write_pc,
+		 aux_read   => aux_read_pc);
 
 	uut_ir: generic_register
 		generic map
-		(identifier		=> ir_id,
+		(identifier     => ir_id,
 		 register_width => word_width)
 		port map
 		(system_bus => system_bus,
-		 clk		=> clk,
-		 aux_write	=> aux_write_ir,
-		 aux_read	=> aux_read_ir);
+		 clk        => clk,
+		 aux_write  => aux_write_ir,
+		 aux_read   => aux_read_ir);
 
 	clock: process
 	begin
 		clk <= '0';
-		wait for clk_period/2;
+		wait for clk_period / 2;
 		clk <= '1';
-		wait for clk_period/2;
+		wait for clk_period / 2;
 	end process;
 
 	stimulus: process

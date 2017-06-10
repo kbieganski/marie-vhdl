@@ -33,11 +33,11 @@ package body utility is
 		variable enc: std_logic_vector(word_width - 1 downto 0);
 	begin
 		enc(word_width - 1) := '0';
-        if result then
-            enc(word_width - 2 downto 4) := (others => '1');
-        else
-            enc(word_width - 2 downto 4) := (others => '0');
-        end if;
+		if result then
+			enc(word_width - 2 downto 4) := (others => '1');
+		else
+			enc(word_width - 2 downto 4) := (others => '0');
+		end if;
 		enc(3 downto 0) := alu_id;
 		return enc;
 	end function;

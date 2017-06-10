@@ -14,29 +14,29 @@ architecture behavioral of arithmetic_logic_unit_tb is
 		generic
 			(identifier: std_logic_vector(3 downto 0));
 		port
-			(system_bus:		inout std_logic_vector(word_width - 1 downto 0);
-			 clk:				in	  std_logic;
-			 accumulator_read:	in	  std_logic_vector(word_width - 1 downto 0);
-			 accumulator_write: out	  std_logic_vector(word_width - 1 downto 0);
-			 memory_buffer:		in	  std_logic_vector(word_width - 1 downto 0));
+			(system_bus:        inout std_logic_vector(word_width - 1 downto 0);
+			 clk:               in    std_logic;
+			 accumulator_read:  in    std_logic_vector(word_width - 1 downto 0);
+			 accumulator_write: out   std_logic_vector(word_width - 1 downto 0);
+			 memory_buffer:     in    std_logic_vector(word_width - 1 downto 0));
 	end component;
 
 	component generic_register
 		generic
-			(identifier:	 std_logic_vector(3 downto 0);
+			(identifier:     std_logic_vector(3 downto 0);
 			 register_width: natural);
 		port
 			(system_bus: inout std_logic_vector(bus_width - 1 downto 0);
-			 clk:		 in	   std_logic;
-			 aux_write:	 in	   std_logic_vector(register_width - 1 downto 0);
-			 aux_read:	 out   std_logic_vector(register_width - 1 downto 0));
+			 clk:        in    std_logic;
+			 aux_write:  in    std_logic_vector(register_width - 1 downto 0);
+			 aux_read:   out   std_logic_vector(register_width - 1 downto 0));
 	end component;
 
 	constant clk_period: time := 10 ns;
 
 	signal clk: std_logic := '0';
 
-	signal system_bus:	  std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
+	signal system_bus:    std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
 	signal aux_read_acc:  std_logic_vector(word_width - 1 downto 0);
 	signal aux_write_acc: std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
 	signal aux_read_mbr:  std_logic_vector(word_width - 1 downto 0);
@@ -47,43 +47,43 @@ begin
 		generic map
 		(identifier => x"0")
 		port map
-		(system_bus		   => system_bus,
-		 clk			   => clk,
+		(system_bus        => system_bus,
+		 clk               => clk,
 		 accumulator_read  => aux_read_acc,
 		 accumulator_write => aux_write_acc,
-		 memory_buffer	   => aux_read_mbr);
+		 memory_buffer     => aux_read_mbr);
 
 	uut_acc: generic_register
 		generic map
-		(identifier		=> x"A",
+		(identifier     => x"A",
 		 register_width => word_width)
 		port map
 		(system_bus => system_bus,
-		 clk		=> clk,
-		 aux_write	=> aux_write_acc,
-		 aux_read	=> aux_read_acc);
+		 clk        => clk,
+		 aux_write  => aux_write_acc,
+		 aux_read   => aux_read_acc);
 
 	uut_mbr: generic_register
 		generic map
-		(identifier		=> x"B",
+		(identifier     => x"B",
 		 register_width => word_width)
 		port map
 		(system_bus => system_bus,
-		 clk		=> clk,
-		 aux_write	=> aux_write_mbr,
-		 aux_read	=> aux_read_mbr);
+		 clk        => clk,
+		 aux_write  => aux_write_mbr,
+		 aux_read   => aux_read_mbr);
 
 	clock: process
 	begin
 		clk <= '0';
-		wait for clk_period/2;
+		wait for clk_period / 2;
 		clk <= '1';
-		wait for clk_period/2;
+		wait for clk_period / 2;
 	end process;
 
 	stimulus: process
-		constant test_value_1:	  std_logic_vector(word_width - 1 downto 0) := x"0065";
-		constant test_value_2:	  std_logic_vector(word_width - 1 downto 0) := x"009B";
+		constant test_value_1:    std_logic_vector(word_width - 1 downto 0) := x"0065";
+		constant test_value_2:    std_logic_vector(word_width - 1 downto 0) := x"009B";
 		constant test_value_neg:  std_logic_vector(word_width - 1 downto 0) := x"FFFF";
 		constant test_value_zero: std_logic_vector(word_width - 1 downto 0) := x"0000";
 		constant test_value_pos:  std_logic_vector(word_width - 1 downto 0) := x"0001";

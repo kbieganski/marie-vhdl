@@ -8,25 +8,25 @@ use work.utility.all;
 
 entity controller is
 	generic
-		(identifier:		 std_logic_vector(3 downto 0);
+		(identifier:         std_logic_vector(3 downto 0);
 		 program_counter_id: std_logic_vector(3 downto 0);
 		 instruction_reg_id: std_logic_vector(3 downto 0);
-		 alu_id:			 std_logic_vector(3 downto 0);
-		 ram_id:			 std_logic_vector(3 downto 0);
-		 accumulator_id:	 std_logic_vector(3 downto 0);
-		 memory_address_id:	 std_logic_vector(3 downto 0);
-		 memory_buffer_id:	 std_logic_vector(3 downto 0));
+		 alu_id:             std_logic_vector(3 downto 0);
+		 ram_id:             std_logic_vector(3 downto 0);
+		 accumulator_id:     std_logic_vector(3 downto 0);
+		 memory_address_id:  std_logic_vector(3 downto 0);
+		 memory_buffer_id:   std_logic_vector(3 downto 0));
 	port
-		(system_bus:			inout std_logic_vector(word_width - 1 downto 0);
-		 clk:					in	  std_logic;
-		 program_counter_read:	in	  std_logic_vector(word_width - 5 downto 0);
-		 program_counter_write: out	  std_logic_vector(word_width - 5 downto 0) := (others => 'Z');
-		 instruction:			in	  std_logic_vector(word_width - 1 downto 0));
+		(system_bus:            inout std_logic_vector(word_width - 1 downto 0);
+		 clk:                   in    std_logic;
+		 program_counter_read:  in    std_logic_vector(word_width - 5 downto 0);
+		 program_counter_write: out   std_logic_vector(word_width - 5 downto 0) := (others => 'Z');
+		 instruction:           in    std_logic_vector(word_width - 1 downto 0));
 end controller;
 
 architecture behavioral of controller is
-	signal input:	 std_logic_vector(word_width - 1 downto 0);
-	signal output:	 std_logic_vector(word_width - 1 downto 0);
+	signal input:  std_logic_vector(word_width - 1 downto 0);
+	signal output: std_logic_vector(word_width - 1 downto 0);
 
 	signal sending: std_logic := '0';
 

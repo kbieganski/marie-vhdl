@@ -6,13 +6,13 @@ use work.utility.all;
 
 entity generic_register is
 	generic
-		(identifier:	 std_logic_vector(3 downto 0);
+		(identifier:     std_logic_vector(3 downto 0);
 		 register_width: natural);
 	port
 		(system_bus: inout std_logic_vector(bus_width - 1 downto 0);
-		 clk:		 in	   std_logic;
-		 aux_write:	 in	   std_logic_vector(register_width - 1 downto 0);
-		 aux_read:	 out   std_logic_vector(register_width - 1 downto 0));
+		 clk:        in    std_logic;
+		 aux_write:  in    std_logic_vector(register_width - 1 downto 0);
+		 aux_read:   out   std_logic_vector(register_width - 1 downto 0));
 end generic_register;
 
 architecture behavioral of generic_register is

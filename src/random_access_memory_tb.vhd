@@ -12,30 +12,30 @@ end random_access_memory_tb;
 architecture behavioral of random_access_memory_tb is
 	component random_access_memory is
 		generic
-			(identifier:	   std_logic_vector(3 downto 0);
+			(identifier:       std_logic_vector(3 downto 0);
 			 memory_buffer_id: std_logic_vector(3 downto 0));
 		port
-			(system_bus:	 inout std_logic_vector(word_width - 1 downto 0);
-			 clk:			 in	   std_logic;
-			 memory_address: in	   std_logic_vector(address_width - 1 downto 0));
+			(system_bus:     inout std_logic_vector(word_width - 1 downto 0);
+			 clk:            in    std_logic;
+			 memory_address: in    std_logic_vector(address_width - 1 downto 0));
 	end component;
 
 	component generic_register
 		generic
-			(identifier:	 std_logic_vector(3 downto 0);
+			(identifier:     std_logic_vector(3 downto 0);
 			 register_width: natural);
 		port
 			(system_bus: inout std_logic_vector(bus_width - 1 downto 0);
-			 clk:		 in	   std_logic;
-			 aux_write:	 in	   std_logic_vector(register_width - 1 downto 0);
-			 aux_read:	 out   std_logic_vector(register_width - 1 downto 0));
+			 clk:        in    std_logic;
+			 aux_write:  in    std_logic_vector(register_width - 1 downto 0);
+			 aux_read:   out   std_logic_vector(register_width - 1 downto 0));
 	end component;
 
 	constant clk_period: time := 10 ns;
 
 	signal clk: std_logic := '0';
 
-	signal system_bus:	  std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
+	signal system_bus:    std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
 	signal aux_write_mar: std_logic_vector(address_width - 1 downto 0) := (others => 'Z');
 	signal aux_read_mar:  std_logic_vector(address_width - 1 downto 0);
 	signal aux_write_mbr: std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
@@ -44,39 +44,39 @@ architecture behavioral of random_access_memory_tb is
 begin
 	uut_ram: random_access_memory
 		generic map
-		(identifier		  => x"0",
+		(identifier       => x"0",
 		 memory_buffer_id => x"B")
 		port map
-		(system_bus		=> system_bus,
-		 clk			=> clk,
+		(system_bus     => system_bus,
+		 clk            => clk,
 		 memory_address => aux_read_mar);
 
 	uut_mar: generic_register
 		generic map
-		(identifier		=> x"A",
+		(identifier     => x"A",
 		 register_width => address_width)
 		port map
 		(system_bus => system_bus,
-		 clk		=> clk,
-		 aux_write	=> aux_write_mar,
-		 aux_read	=> aux_read_mar);
+		 clk        => clk,
+		 aux_write  => aux_write_mar,
+		 aux_read   => aux_read_mar);
 
 	uut_mbr: generic_register
 		generic map
-		(identifier		=> x"B",
+		(identifier     => x"B",
 		 register_width => word_width)
 		port map
 		(system_bus => system_bus,
-		 clk		=> clk,
-		 aux_write	=> aux_write_mbr,
-		 aux_read	=> aux_read_mbr);
+		 clk        => clk,
+		 aux_write  => aux_write_mbr,
+		 aux_read   => aux_read_mbr);
 
 	clock: process
 	begin
 		clk <= '0';
-		wait for clk_period/2;
+		wait for clk_period / 2;
 		clk <= '1';
-		wait for clk_period/2;
+		wait for clk_period / 2;
 	end process;
 
 	stimulus: process
