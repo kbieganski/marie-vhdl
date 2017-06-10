@@ -94,7 +94,7 @@ begin
 				wait_cycles(1);
 				sending <= '0';
 				wait_cycles(3);
-				program_counter_write <= std_logic_vector(signed(program_counter_read) + 1);
+				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 
 			elsif opcode = x"2" then -- Store
 				sending <= '1';
@@ -117,7 +117,7 @@ begin
 				wait_cycles(1);
 				sending <= '0';
 				wait_cycles(3);
-				program_counter_write <= std_logic_vector(signed(program_counter_read) + 1);
+				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 
 			elsif opcode = x"3" then -- Add
 				load_to_memory_buffer(output, sending, oparg);
@@ -126,7 +126,7 @@ begin
 				wait_cycles(1);
 				sending <= '0';
 				wait_cycles(3);
-				program_counter_write <= std_logic_vector(signed(program_counter_read) + 1);
+				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 
 			elsif opcode = x"4" then -- Subt
 				load_to_memory_buffer(output, sending, oparg);
@@ -135,12 +135,12 @@ begin
 				wait_cycles(1);
 				sending <= '0';
 				wait_cycles(3);
-				program_counter_write <= std_logic_vector(signed(program_counter_read) + 1);
+				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 
 			elsif opcode = x"5" then -- Input
-				program_counter_write <= std_logic_vector(signed(program_counter_read) + 1);
+				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 			elsif opcode = x"6" then -- Output
-				program_counter_write <= std_logic_vector(signed(program_counter_read) + 1);
+				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 			elsif opcode = x"7" then -- Halt
 				finish(0);
 			elsif opcode = x"8" then -- Skipcond
@@ -150,12 +150,12 @@ begin
 				sending <= '0';
 				wait until rising_edge(clk);
 				if decode_alu_result(input) then
-					program_counter_write <= std_logic_vector(signed(program_counter_read) + 1);
+					program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 				end if;
 				wait until falling_edge(clk);
 				program_counter_write <= (others => 'Z');
 				wait_cycles(2);
-				program_counter_write <= std_logic_vector(signed(program_counter_read) + 1);
+				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 
 			elsif opcode = x"9" then -- Jump
 				program_counter_write <= oparg;
