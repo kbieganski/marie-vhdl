@@ -7,8 +7,8 @@ tests: $(TESTS)
 %_tb: obj/global_constants.o obj/utility.o $(OBJECTS)
 	cd obj && ghdl -e --std=08 $@
 	@mv obj/$@ .
-	@echo "TEST START - $@"; echo "ghdl -r $@"
-	@timeout 1 ghdl -r $@; echo "TEST END - $@"
+	@echo; echo "TEST - $@"
+	ghdl -r $@
 
 obj/%.o: src/%.vhd
 	@mkdir -p obj

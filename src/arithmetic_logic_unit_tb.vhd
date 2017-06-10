@@ -1,6 +1,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+library std;
+use std.env.all;
 use work.global_constants.all;
 use work.utility.all;
 
@@ -170,7 +172,7 @@ begin
 		wait for clk_period / 2;
 		assert not decode_alu_result(system_bus) report "False positive result of checking if number is less than 0";
 
-		wait;
+        finish(0);
 	end process;
 
 end behavioral;

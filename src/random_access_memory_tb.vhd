@@ -1,6 +1,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+library std;
+use std.env.all;
 use work.global_constants.all;
 use work.utility.all;
 
@@ -103,7 +105,8 @@ begin
 			assert aux_read_mbr = std_logic_vector(to_unsigned(max_address - i, word_width)) report "Incorrect value at address " & integer'image(i);
 			wait for 0.5 * clk_period;
 		end loop;
-		wait;
+
+        finish(0);
 	end process;
 
 end behavioral;

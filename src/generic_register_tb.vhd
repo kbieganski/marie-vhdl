@@ -1,6 +1,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+library std;
+use std.env.all;
 use work.global_constants.all;
 use work.utility.all;
 
@@ -86,7 +88,7 @@ begin
 		wait for 2 * clk_period;
 		assert aux_read_a = test_value_2 report "Incorrect value in receiving register (A)";
 
-		wait;
+        finish(0);
 	end process;
 
 end behavioral;

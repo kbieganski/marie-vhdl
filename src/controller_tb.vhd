@@ -240,8 +240,6 @@ begin
 		-- Test Halt
 		wait for 0.5 * clk_period;
 		fetch_decode(system_bus, aux_write_mbr, x"7000");
-
-		wait;
 	end process;
 
 end behavioral;
