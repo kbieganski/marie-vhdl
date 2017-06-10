@@ -1,12 +1,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.global_constants.all;
 
 entity generic_register is
 	generic
 		(identifier:	 std_logic_vector(3 downto 0);
-		 register_width: natural;
-		 bus_width:		 natural);
+		 register_width: natural);
 	port
 		(system_bus: inout std_logic_vector(bus_width - 1 downto 0);
 		 clk:		 in	   std_logic;

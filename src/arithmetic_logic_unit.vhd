@@ -1,11 +1,11 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.global_constants.all;
 
 entity arithmetic_logic_unit is
 	generic
-		(identifier: std_logic_vector(3 downto 0);
-		 word_width: natural);
+		(identifier: std_logic_vector(3 downto 0));
 	port
 		(system_bus:		inout std_logic_vector(word_width - 1 downto 0);
 		 clk:				in	  std_logic;

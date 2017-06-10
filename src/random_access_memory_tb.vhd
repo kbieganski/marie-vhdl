@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.global_constants.all;
 
 entity random_access_memory_tb is
 end random_access_memory_tb;
@@ -9,9 +10,7 @@ architecture behavioral of random_access_memory_tb is
 	component random_access_memory is
 		generic
 			(identifier:	   std_logic_vector(3 downto 0);
-			 memory_buffer_id: std_logic_vector(3 downto 0);
-			 word_width:	   natural;
-			 address_width:	   natural);
+			 memory_buffer_id: std_logic_vector(3 downto 0));
 		port
 			(system_bus:	 inout std_logic_vector(word_width - 1 downto 0);
 			 clk:			 in	   std_logic;
@@ -21,8 +20,7 @@ architecture behavioral of random_access_memory_tb is
 	component generic_register
 		generic
 			(identifier:	 std_logic_vector(3 downto 0);
-			 register_width: natural;
-			 bus_width:		 natural);
+			 register_width: natural);
 		port
 			(system_bus: inout std_logic_vector(bus_width - 1 downto 0);
 			 clk:		 in	   std_logic;
@@ -30,9 +28,7 @@ architecture behavioral of random_access_memory_tb is
 			 aux_read:	 out   std_logic_vector(register_width - 1 downto 0));
 	end component;
 
-	constant clk_period:	time	:= 10 ns;
-	constant word_width:	natural := 16;
-	constant address_width: natural := word_width - 4;
+	constant clk_period: time := 10 ns;
 
 	signal clk: std_logic := '0';
 
@@ -46,9 +42,7 @@ begin
 	uut_ram: random_access_memory
 		generic map
 		(identifier		  => x"0",
-		 memory_buffer_id => x"B",
-		 word_width		  => word_width,
-		 address_width	  => address_width)
+		 memory_buffer_id => x"B")
 		port map
 		(system_bus		=> system_bus,
 		 clk			=> clk,
@@ -57,8 +51,7 @@ begin
 	uut_mar: generic_register
 		generic map
 		(identifier		=> x"A",
-		 register_width => address_width,
-		 bus_width		=> word_width)
+		 register_width => address_width)
 		port map
 		(system_bus => system_bus,
 		 clk		=> clk,
@@ -68,8 +61,7 @@ begin
 	uut_mbr: generic_register
 		generic map
 		(identifier		=> x"B",
-		 register_width => word_width,
-		 bus_width		=> word_width)
+		 register_width => word_width)
 		port map
 		(system_bus => system_bus,
 		 clk		=> clk,

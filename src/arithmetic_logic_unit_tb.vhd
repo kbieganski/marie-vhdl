@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.global_constants.all;
 
 entity arithmetic_logic_unit_tb is
 end arithmetic_logic_unit_tb;
@@ -8,8 +9,7 @@ end arithmetic_logic_unit_tb;
 architecture behavioral of arithmetic_logic_unit_tb is
 	component arithmetic_logic_unit is
 		generic
-			(identifier: std_logic_vector(3 downto 0);
-			 word_width: natural);
+			(identifier: std_logic_vector(3 downto 0));
 		port
 			(system_bus:		inout std_logic_vector(word_width - 1 downto 0);
 			 clk:				in	  std_logic;
@@ -21,8 +21,7 @@ architecture behavioral of arithmetic_logic_unit_tb is
 	component generic_register
 		generic
 			(identifier:	 std_logic_vector(3 downto 0);
-			 register_width: natural;
-			 bus_width:		 natural);
+			 register_width: natural);
 		port
 			(system_bus: inout std_logic_vector(bus_width - 1 downto 0);
 			 clk:		 in	   std_logic;
@@ -30,8 +29,7 @@ architecture behavioral of arithmetic_logic_unit_tb is
 			 aux_read:	 out   std_logic_vector(register_width - 1 downto 0));
 	end component;
 
-	constant clk_period: time	 := 10 ns;
-	constant word_width: natural := 16;
+	constant clk_period: time := 10 ns;
 
 	signal clk: std_logic := '0';
 
@@ -44,8 +42,7 @@ architecture behavioral of arithmetic_logic_unit_tb is
 begin
 	uut_alu: arithmetic_logic_unit
 		generic map
-		(identifier => x"0",
-		 word_width => word_width)
+		(identifier => x"0")
 		port map
 		(system_bus		   => system_bus,
 		 clk			   => clk,
@@ -56,8 +53,7 @@ begin
 	uut_acc: generic_register
 		generic map
 		(identifier		=> x"A",
-		 register_width => word_width,
-		 bus_width		=> word_width)
+		 register_width => word_width)
 		port map
 		(system_bus => system_bus,
 		 clk		=> clk,
@@ -67,8 +63,7 @@ begin
 	uut_mbr: generic_register
 		generic map
 		(identifier		=> x"B",
-		 register_width => word_width,
-		 bus_width		=> word_width)
+		 register_width => word_width)
 		port map
 		(system_bus => system_bus,
 		 clk		=> clk,

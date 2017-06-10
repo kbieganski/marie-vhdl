@@ -1,13 +1,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.global_constants.all;
 
 entity random_access_memory is
 	generic
 		(identifier:	   std_logic_vector(3 downto 0);
-		 memory_buffer_id: std_logic_vector(3 downto 0);
-		 word_width:	   natural;
-		 address_width:	   natural);
+		 memory_buffer_id: std_logic_vector(3 downto 0));
 	port
 		(system_bus:	 inout std_logic_vector(word_width - 1 downto 0);
 		 clk:			 in	   std_logic;

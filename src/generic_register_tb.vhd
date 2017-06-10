@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.global_constants.all;
 
 entity generic_register_tb is
 end generic_register_tb;
@@ -9,8 +10,7 @@ architecture behavioral of generic_register_tb is
 	component generic_register
 		generic
 			(identifier:	 std_logic_vector(3 downto 0);
-			 register_width: natural;
-			 bus_width:		 natural);
+			 register_width: natural);
 		port
 			(system_bus: inout std_logic_vector(bus_width - 1 downto 0);
 			 clk:		 in	   std_logic;
@@ -18,8 +18,7 @@ architecture behavioral of generic_register_tb is
 			 aux_read:	 out   std_logic_vector(register_width - 1 downto 0));
 	end component;
 
-	constant clk_period: time	 := 10 ns;
-	constant bus_width:	 natural := 16;
+	constant clk_period: time := 10 ns;
 
 	signal clk: std_logic := '0';
 
@@ -33,8 +32,7 @@ begin
 	uut_a: generic_register
 		generic map
 		(identifier		=> x"A",
-		 register_width => bus_width,
-		 bus_width		=> bus_width)
+		 register_width => bus_width)
 		port map
 		(system_bus => system_bus,
 		 clk		=> clk,
@@ -44,8 +42,7 @@ begin
 	uut_b: generic_register
 		generic map
 		(identifier		=> x"B",
-		 register_width => bus_width,
-		 bus_width		=> bus_width)
+		 register_width => bus_width)
 		port map
 		(system_bus => system_bus,
 		 clk		=> clk,
