@@ -29,6 +29,27 @@ architecture behavioral of marie is
 			 running:               in    std_logic);
 	end component;
 
+	component arithmetic_logic_unit is
+		generic
+			(identifier: std_logic_vector(3 downto 0));
+		port
+			(system_bus:        inout std_logic_vector(word_width - 1 downto 0);
+			 clk:               in    std_logic;
+			 accumulator_read:  in    std_logic_vector(word_width - 1 downto 0);
+			 accumulator_write: out   std_logic_vector(word_width - 1 downto 0);
+			 memory_buffer:     in    std_logic_vector(word_width - 1 downto 0));
+	end component;
+
+	component random_access_memory is
+		generic
+			(identifier:       std_logic_vector(3 downto 0);
+			 memory_buffer_id: std_logic_vector(3 downto 0));
+		port
+			(system_bus:     inout std_logic_vector(word_width - 1 downto 0);
+			 clk:            in    std_logic;
+			 memory_address: in    std_logic_vector(address_width - 1 downto 0));
+	end component;
+
 	component generic_register
 		generic
 			(identifier:     std_logic_vector(3 downto 0);
@@ -152,7 +173,7 @@ architecture behavioral of marie is
 			elsif loc.all'length >= 5 and loc(1 to 5) = "Jump " then
 				load_instruction(sb, mar, mbr, i, x"9", integer'value(loc(6 to loc.all'length)));
 			else
-				load_value(sb, mar, mbr, i, integer'value(loc(6 to loc.all'length)));
+				load_value(sb, mar, mbr, i, integer'value(loc(1 to loc.all'length)));
 			end if;
 			i := i + 1;
 		end loop;
@@ -170,12 +191,31 @@ begin
 		 memory_address_id  => mar_id,
 		 memory_buffer_id   => mbr_id)
 		port map
-		(system_bus			   => system_bus,
-		 clk				   => clk,
+		(system_bus            => system_bus,
+		 clk                   => clk,
 		 program_counter_read  => aux_read_pc,
 		 program_counter_write => aux_write_pc,
-		 instruction		   => aux_read_mbr,
+		 instruction           => aux_read_ir,
 		 running               => running);
+
+	uut_alu: arithmetic_logic_unit
+		generic map
+		(identifier => alu_id)
+		port map
+		(system_bus        => system_bus,
+		 clk               => clk,
+		 accumulator_read  => aux_read_acc,
+		 accumulator_write => aux_write_acc,
+		 memory_buffer     => aux_read_mbr);
+
+	uut_ram: random_access_memory
+		generic map
+		(identifier       => ram_id,
+		 memory_buffer_id => mbr_id)
+		port map
+		(system_bus     => system_bus,
+		 clk            => clk,
+		 memory_address => aux_read_mar);
 
 	uut_acc: generic_register
 		generic map
