@@ -1,6 +1,5 @@
 library ieee;
 use ieee.std_logic_1164.all;
-library std;
 use std.env.all;
 use work.global_constants.all;
 use work.utility.all;
