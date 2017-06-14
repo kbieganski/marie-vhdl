@@ -46,9 +46,9 @@ architecture behavioral of controller is
 		wait_cycles(1);
 		output(word_width - 1 downto address_width) <= (others => '0');
 		output(address_width - 1 downto 0) <= address;
-		wait_cycles(1);
-		sending <= '0';
 		wait_cycles(2);
+		sending <= '0';
+		wait_cycles(1);
 
 		sending <= '1';
 		output <= encode_ram_cmd(ram_id, '1');
