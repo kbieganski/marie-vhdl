@@ -90,11 +90,11 @@ begin
 		 memory_address_id  => mar_id,
 		 memory_buffer_id   => mbr_id)
 		port map
-		(system_bus			   => system_bus,
-		 clk				   => clk,
+		(system_bus            => system_bus,
+		 clk                   => clk,
 		 program_counter_read  => aux_read_pc,
 		 program_counter_write => aux_write_pc,
-		 instruction		   => aux_read_mbr,
+		 instruction           => aux_read_ir,
 		 running               => running);
 
 	uut_acc: generic_register
