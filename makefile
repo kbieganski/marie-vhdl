@@ -19,4 +19,4 @@ obj/%.o: src/%.vhd
 	cd obj && ghdl -a --std=08 ../$<
 
 clean:
-	rm -rf obj *_tb
+	rm -rf obj marie *_tb
