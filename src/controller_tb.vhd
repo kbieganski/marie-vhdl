@@ -22,8 +22,9 @@ architecture behavioral of controller_tb is
 			(system_bus:            inout std_logic_vector(word_width - 1 downto 0);
 			 clk:                   in    std_logic;
 			 program_counter_read:  in    std_logic_vector(word_width - 5 downto 0);
-			 program_counter_write: out   std_logic_vector(word_width - 5 downto 0);
-			 instruction:           in    std_logic_vector(word_width - 1 downto 0));
+			 program_counter_write: out	  std_logic_vector(word_width - 5 downto 0);
+			 instruction:           in    std_logic_vector(word_width - 1 downto 0);
+			 running:               in    std_logic);
 	end component;
 
 	component generic_register
@@ -47,7 +48,8 @@ architecture behavioral of controller_tb is
 	constant pc_id:      std_logic_vector(3 downto 0) := x"6";
 	constant ir_id:      std_logic_vector(3 downto 0) := x"7";
 
-	signal clk: std_logic := '0';
+	signal clk:     std_logic := '0';
+	signal running: std_logic := '0';
 
 	signal system_bus:    std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
 	signal aux_read_acc:  std_logic_vector(word_width - 1 downto 0);
@@ -92,7 +94,8 @@ begin
 		 clk				   => clk,
 		 program_counter_read  => aux_read_pc,
 		 program_counter_write => aux_write_pc,
-		 instruction		   => aux_read_mbr);
+		 instruction		   => aux_read_mbr,
+		 running               => running);
 
 	uut_acc: generic_register
 		generic map
@@ -154,6 +157,8 @@ begin
 
 	stimulus: process
 	begin
+		running <= '1';
+
 		-- Test Load
 		fetch_decode(system_bus, aux_write_mbr, x"1ABC");
 		wait for 0.5 * clk_period;

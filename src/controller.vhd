@@ -21,7 +21,8 @@ entity controller is
 		 clk:                   in    std_logic;
 		 program_counter_read:  in    std_logic_vector(word_width - 5 downto 0);
 		 program_counter_write: out   std_logic_vector(word_width - 5 downto 0) := (others => 'Z');
-		 instruction:           in    std_logic_vector(word_width - 1 downto 0));
+		 instruction:           in    std_logic_vector(word_width - 1 downto 0);
+		 running:               in    std_logic);
 end controller;
 
 architecture behavioral of controller is
@@ -61,6 +62,7 @@ begin
 		variable opcode: std_logic_vector(3 downto 0);
 		variable oparg:	 std_logic_vector(address_width - 1 downto 0);
 	begin
+        wait until running = '1';
 		program_counter_write <= (others => '0');
 		loop
 			wait_cycles(1);
