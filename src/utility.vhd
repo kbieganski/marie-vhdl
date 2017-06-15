@@ -59,7 +59,9 @@ package body utility is
 		enc(word_width - 1) := '1';
 		enc(3 downto 0) := src_id;
 		enc(7 downto 4) := dest_id;
-		enc(word_width - 2 downto 8) := (others => '0');
+		if word_width > 9 then
+			enc(word_width - 2 downto 8) := (others => '0');
+		end if;
 		return enc;
 	end function;
 
