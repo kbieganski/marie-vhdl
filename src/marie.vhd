@@ -1,10 +1,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use std.textio.all;
 use work.global_constants.all;
 use work.utility.all;
-use std.env.all;
-use std.textio.all;
 
 entity marie is
 end marie;
@@ -19,7 +18,10 @@ architecture behavioral of marie is
 			 ram_id:             std_logic_vector(3 downto 0);
 			 accumulator_id:     std_logic_vector(3 downto 0);
 			 memory_address_id:  std_logic_vector(3 downto 0);
-			 memory_buffer_id:   std_logic_vector(3 downto 0));
+			 memory_buffer_id:   std_logic_vector(3 downto 0);
+			 input_id:           std_logic_vector(3 downto 0);
+			 output_id:          std_logic_vector(3 downto 0);
+			 ui_id:              std_logic_vector(3 downto 0));
 		port
 			(system_bus:            inout std_logic_vector(word_width - 1 downto 0);
 			 clk:                   in    std_logic;
@@ -61,6 +63,16 @@ architecture behavioral of marie is
 			 aux_read:   out   std_logic_vector(register_width - 1 downto 0));
 	end component;
 
+	component user_interface is
+		generic
+			(identifier: std_logic_vector(3 downto 0));
+		port
+			(system_bus:  in  std_logic_vector(word_width - 1 downto 0);
+			 clk:         in  std_logic;
+			 input_write: out std_logic_vector(io_width - 1 downto 0);
+			 output_read: in  std_logic_vector(io_width - 1 downto 0));
+	end component;
+
 	constant clk_period: time := 10 ns;
 	constant ctrlr_id:   std_logic_vector(3 downto 0) := x"0";
 	constant alu_id:     std_logic_vector(3 downto 0) := x"1";
@@ -72,6 +84,7 @@ architecture behavioral of marie is
 	constant ir_id:      std_logic_vector(3 downto 0) := x"7";
 	constant in_id:      std_logic_vector(3 downto 0) := x"8";
 	constant out_id:     std_logic_vector(3 downto 0) := x"9";
+	constant ui_id:      std_logic_vector(3 downto 0) := x"A";
 
 	signal clk:     std_logic := '0';
 	signal running: std_logic := '0';
@@ -87,10 +100,10 @@ architecture behavioral of marie is
 	signal aux_write_pc:  std_logic_vector(address_width - 1 downto 0) := (others => 'Z');
 	signal aux_read_ir:   std_logic_vector(word_width - 1 downto 0);
 	signal aux_write_ir:  std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
-    signal aux_read_in:   std_logic_vector(word_width / 2 - 1 downto 0);
-	signal aux_write_in:  std_logic_vector(word_width / 2 - 1 downto 0) := (others => 'Z');
-    signal aux_read_out:  std_logic_vector(word_width / 2 - 1 downto 0);
-	signal aux_write_out: std_logic_vector(word_width / 2 - 1 downto 0) := (others => 'Z');
+    signal aux_read_in:   std_logic_vector(io_width - 1 downto 0);
+	signal aux_write_in:  std_logic_vector(io_width - 1 downto 0) := (others => 'Z');
+    signal aux_read_out:  std_logic_vector(io_width - 1 downto 0);
+	signal aux_write_out: std_logic_vector(io_width - 1 downto 0) := (others => 'Z');
 
 	procedure load_value(signal sb:	 out std_logic_vector(bus_width - 1 downto 0);
 	                     signal mar: out std_logic_vector(address_width - 1 downto 0);
@@ -189,7 +202,10 @@ begin
 		 ram_id             => ram_id,
 		 accumulator_id     => acc_id,
 		 memory_address_id  => mar_id,
-		 memory_buffer_id   => mbr_id)
+		 memory_buffer_id   => mbr_id,
+		 input_id           => in_id,
+		 output_id          => out_id,
+		 ui_id              => ui_id)
 		port map
 		(system_bus            => system_bus,
 		 clk                   => clk,
@@ -287,6 +303,15 @@ begin
          aux_write  => aux_write_out,
          aux_read   => aux_read_out);
 
+	uut_io: user_interface
+		generic map
+		(identifier => ui_id)
+		port map
+		(system_bus  => system_bus,
+		 clk         => clk,
+		 input_write => aux_write_in,
+		 output_read => aux_read_out);
+
 	clock: process
 	begin
 		clk <= '0';
@@ -296,8 +321,15 @@ begin
 	end process;
 
 	stimulus: process
+		variable io_line:  line;
+		variable prompt:   string(1 to 32) := "Please specify program filename:";
+		variable filename: string(1 to 80);
 	begin
-		load_program(system_bus, aux_write_mar, aux_write_mbr, "STD_INPUT");
+		write(io_line, prompt);
+		writeline(output, io_line);
+		readline(input, io_line);
+		filename(1 to io_line.all'length) := io_line.all;
+		load_program(system_bus, aux_write_mar, aux_write_mbr, filename);
 		running <= '1';
 		wait;
 	end process;

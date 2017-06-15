@@ -15,7 +15,10 @@ entity controller is
 		 ram_id:             std_logic_vector(3 downto 0);
 		 accumulator_id:     std_logic_vector(3 downto 0);
 		 memory_address_id:  std_logic_vector(3 downto 0);
-		 memory_buffer_id:   std_logic_vector(3 downto 0));
+		 memory_buffer_id:   std_logic_vector(3 downto 0);
+		 input_id:           std_logic_vector(3 downto 0);
+		 output_id:          std_logic_vector(3 downto 0);
+		 ui_id:              std_logic_vector(3 downto 0));
 	port
 		(system_bus:            inout std_logic_vector(word_width - 1 downto 0);
 		 clk:                   in    std_logic;
@@ -140,11 +143,37 @@ begin
 				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 
 			elsif opcode = x"5" then -- Input
+				sending <= '1';
+				output <= encode_ui_cmd(ui_id, '0');
+				wait_cycles(1);
+				sending <= '0';
+				wait_cycles(3);
+
+				sending <= '1';
+				output <= encode_send_cmd(input_id, accumulator_id);
+				wait_cycles(1);
+				sending <= '0';
+				wait_cycles(3);
+
 				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
+
 			elsif opcode = x"6" then -- Output
+				sending <= '1';
+				output <= encode_send_cmd(accumulator_id, output_id);
+				wait_cycles(1);
+				sending <= '0';
+				wait_cycles(3);
+
+				sending <= '1';
+				output <= encode_ui_cmd(ui_id, '1');
+				wait_cycles(1);
+				sending <= '0';
+				wait_cycles(3);
 				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
+
 			elsif opcode = x"7" then -- Halt
 				finish(0);
+
 			elsif opcode = x"8" then -- Skipcond
 				sending <= '1';
 				output <= encode_alu_cmd(alu_id, "1" & oparg(address_width - 1 downto address_width - 2));
