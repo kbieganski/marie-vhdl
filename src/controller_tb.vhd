@@ -71,7 +71,7 @@ architecture behavioral of controller_tb is
 		assert system_bus = encode_ram_cmd(ram_id, '1') report "Incorrect command; should request loading from RAM";
 		wait for 3.5 * clk_period;
 		aux_write_mbr <= instruction;
-		wait for 0.5 * clk_period;
+		wait for 1.5 * clk_period;
 		assert system_bus = encode_send_cmd(mbr_id, ir_id) report "Incorrect command; should request sending from MBR to IR";
 		wait for 0.5 * clk_period;
 		aux_write_mbr <= (others => 'Z');
@@ -169,7 +169,7 @@ begin
 		assert system_bus = encode_ram_cmd(ram_id, '1') report "Incorrect command; should request loading from RAM";
 		wait for 3.5 * clk_period;
 		aux_write_mbr <= x"CDEF";
-		wait for 0.5 * clk_period;
+		wait for 1.5 * clk_period;
 		assert system_bus = encode_send_cmd(mbr_id, acc_id) report "Incorrect command; should request sending from MBR to ACC";
 		wait for 0.5 * clk_period;
 		aux_write_mbr <= (others => 'Z');
@@ -192,7 +192,7 @@ begin
 		wait for 0.5 * clk_period;
 
 		-- Test Add
-		wait for 3 * clk_period;
+		wait for 4 * clk_period;
 		fetch_decode(system_bus, aux_write_mbr, x"3ABC");
 		wait for 0.5 * clk_period;
 		assert system_bus = encode_send_cmd(ctrlr_id, mar_id) report "Incorrect command; should be sending to MAR";
@@ -202,7 +202,7 @@ begin
 		assert system_bus = encode_ram_cmd(ram_id, '1') report "Incorrect command; should request loading from RAM";
 		wait for 3.5 * clk_period;
 		aux_write_mbr <= x"CDEF";
-		wait for 0.5 * clk_period;
+		wait for 1.5 * clk_period;
 		assert system_bus = encode_alu_cmd(alu_id, "000") report "Incorrect command; should request addition from ALU";
 		wait for 0.5 * clk_period;
 		aux_write_mbr <= (others => 'Z');
@@ -218,7 +218,7 @@ begin
 		assert system_bus = encode_ram_cmd(ram_id, '1') report "Incorrect command; should request loading from RAM";
 		wait for 3.5 * clk_period;
 		aux_write_mbr <= x"CDEF";
-		wait for 0.5 * clk_period;
+		wait for 1.5 * clk_period;
 		assert system_bus = encode_alu_cmd(alu_id, "001") report "Incorrect command; should request subtraction from ALU";
 		wait for 0.5 * clk_period;
 		aux_write_mbr <= (others => 'Z');

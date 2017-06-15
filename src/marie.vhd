@@ -100,9 +100,9 @@ architecture behavioral of marie is
 	signal aux_write_pc:  std_logic_vector(address_width - 1 downto 0) := (others => 'Z');
 	signal aux_read_ir:   std_logic_vector(word_width - 1 downto 0);
 	signal aux_write_ir:  std_logic_vector(word_width - 1 downto 0) := (others => 'Z');
-    signal aux_read_in:   std_logic_vector(io_width - 1 downto 0);
+	signal aux_read_in:   std_logic_vector(io_width - 1 downto 0);
 	signal aux_write_in:  std_logic_vector(io_width - 1 downto 0) := (others => 'Z');
-    signal aux_read_out:  std_logic_vector(io_width - 1 downto 0);
+	signal aux_read_out:  std_logic_vector(io_width - 1 downto 0);
 	signal aux_write_out: std_logic_vector(io_width - 1 downto 0) := (others => 'Z');
 
 	procedure load_value(signal sb:	 out std_logic_vector(bus_width - 1 downto 0);
@@ -145,13 +145,14 @@ architecture behavioral of marie is
 	                           signal mbr: out std_logic_vector(word_width - 1 downto 0);
 	                           i: integer; op: std_logic_vector(3 downto 0); arg: integer) is
 		variable instruction: std_logic_vector(word_width - 1 downto 0);
+		variable arg_bit_vec: std_logic_vector(address_width - 1 downto 0) := std_logic_vector(to_signed(arg, address_width));
 	begin
 		instruction(word_width - 1 downto word_width - 4) := op;
 		if op = x"8" then
-			instruction(word_width - 5 downto word_width - 6) := std_logic_vector(to_signed(arg, 2));
+			instruction(word_width - 5 downto word_width - 6) := arg_bit_vec(1 downto 0);
 			instruction(word_width - 7 downto 0) := (others => '0');
 		else
-			instruction(word_width - 5 downto 0) := std_logic_vector(to_signed(arg, address_width));
+			instruction(word_width - 5 downto 0) := arg_bit_vec;
 		end if;
 		load_value(sb, mar, mbr, i, instruction);
 	end;
@@ -162,7 +163,7 @@ architecture behavioral of marie is
 	                       filename: string) is
 		file	 code: text open read_mode is filename;
 		variable loc:  line;
-		variable i:	   integer := 0;
+		variable i:    integer := 0;
 	begin
 		wait for clk_period;
 		while not endfile(code) loop
@@ -286,7 +287,7 @@ begin
 	uut_in: generic_register
         generic map
         (identifier     => in_id,
-         register_width => word_width / 2)
+         register_width => io_width)
         port map
         (system_bus => system_bus,
          clk        => clk,
@@ -296,7 +297,7 @@ begin
 	uut_out: generic_register
         generic map
         (identifier     => out_id,
-         register_width => word_width / 2)
+         register_width => io_width)
         port map
         (system_bus => system_bus,
          clk        => clk,
@@ -330,6 +331,7 @@ begin
 		readline(input, io_line);
 		filename(1 to io_line.all'length) := io_line.all;
 		load_program(system_bus, aux_write_mar, aux_write_mbr, filename);
+		wait for clk_period;
 		running <= '1';
 		wait;
 	end process;

@@ -49,15 +49,15 @@ architecture behavioral of controller is
 		wait_cycles(1);
 		output(word_width - 1 downto address_width) <= (others => '0');
 		output(address_width - 1 downto 0) <= address;
-		wait_cycles(2);
-		sending <= '0';
 		wait_cycles(1);
+		sending <= '0';
+		wait_cycles(2);
 
 		sending <= '1';
 		output <= encode_ram_cmd(ram_id, '1');
 		wait_cycles(1);
 		sending <= '0';
-		wait_cycles(3);
+		wait_cycles(4);
 	end procedure;
 
 begin
@@ -65,7 +65,7 @@ begin
 		variable opcode: std_logic_vector(3 downto 0);
 		variable oparg:	 std_logic_vector(address_width - 1 downto 0);
 	begin
-        wait until running = '1';
+		wait until running = '1';
 		program_counter_write <= (others => '0');
 		loop
 			wait_cycles(1);
@@ -81,7 +81,7 @@ begin
 			output <= encode_ram_cmd(ram_id, '1');
 			wait_cycles(1);
 			sending <= '0';
-			wait_cycles(3);
+			wait_cycles(4);
 
 			sending <= '1';
 			output <= encode_send_cmd(memory_buffer_id, instruction_reg_id);
@@ -121,7 +121,7 @@ begin
 				output <= encode_ram_cmd(ram_id, '0');
 				wait_cycles(1);
 				sending <= '0';
-				wait_cycles(3);
+				wait_cycles(4);
 				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 
 			elsif opcode = x"3" then -- Add
