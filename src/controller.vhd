@@ -145,9 +145,8 @@ begin
 			elsif opcode = x"5" then -- Input
 				sending <= '1';
 				output <= encode_ui_cmd(ui_id, '0');
-				wait_cycles(1);
+				wait_cycles(2);
 				sending <= '0';
-				wait_cycles(3);
 
 				sending <= '1';
 				output <= encode_send_cmd(input_id, accumulator_id);
@@ -166,9 +165,8 @@ begin
 
 				sending <= '1';
 				output <= encode_ui_cmd(ui_id, '1');
-				wait_cycles(1);
+				wait_cycles(2);
 				sending <= '0';
-				wait_cycles(3);
 				program_counter_write <= std_logic_vector(unsigned(program_counter_read) + 1);
 
 			elsif opcode = x"7" then -- Halt
