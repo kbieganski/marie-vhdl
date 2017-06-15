@@ -285,24 +285,24 @@ begin
 		 aux_read   => aux_read_ir);
 
 	uut_in: generic_register
-        generic map
-        (identifier     => in_id,
-         register_width => io_width)
-        port map
-        (system_bus => system_bus,
-         clk        => clk,
-         aux_write  => aux_write_in,
-         aux_read   => aux_read_in);
+		generic map
+		(identifier     => in_id,
+		 register_width => io_width)
+		port map
+		(system_bus => system_bus,
+		 clk        => clk,
+		 aux_write  => aux_write_in,
+		 aux_read   => aux_read_in);
 
 	uut_out: generic_register
-        generic map
-        (identifier     => out_id,
-         register_width => io_width)
-        port map
-        (system_bus => system_bus,
-         clk        => clk,
-         aux_write  => aux_write_out,
-         aux_read   => aux_read_out);
+		generic map
+		(identifier     => out_id,
+		 register_width => io_width)
+		port map
+		(system_bus => system_bus,
+		 clk        => clk,
+		 aux_write  => aux_write_out,
+		 aux_read   => aux_read_out);
 
 	uut_io: user_interface
 		generic map
